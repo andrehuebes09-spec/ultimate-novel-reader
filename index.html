@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+<title>Ultimate Novel Reader</title>
+<meta name="description" content="Leia web novels em português no celular e no PC: download, tradução automática e audiobook.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: abertura com o leitor desenhado ao lado do nome; depois recursos em grade, passo a passo, instalação e requisitos. */
+:root {
+  --ink: #17141f;          /* texto */
+  --paper: #f7f5fb;        /* fundo */
+  --sheet: #ffffff;        /* superfícies */
+  --muted: #5e5870;        /* texto secundário */
+  --line: #e2dcef;         /* divisórias */
+  --violet: #6b4ce6;       /* destaque (o roxo do app) */
+  --violet-soft: #ece6ff;
+  --sepia: #f4ecd8;        /* tema Sépia do leitor */
+  --sepia-ink: #4f3b2b;
+  --mark: #e7d9b4;         /* parágrafo lido pelo audiobook */
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-read: "Literata", Georgia, "Times New Roman", serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #ece8f6; --paper: #13111a; --sheet: #1c1925; --muted: #a59fb8; --line: #2e2a3b;
+    --violet: #9d86ff; --violet-soft: #2a2442; --sepia: #2a2520; --sepia-ink: #e3d6bd; --mark: #4a3f2c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ink: #ece8f6; --paper: #13111a; --sheet: #1c1925; --muted: #a59fb8; --line: #2e2a3b;
+  --violet: #9d86ff; --violet-soft: #2a2442; --sepia: #2a2520; --sepia-ink: #e3d6bd; --mark: #4a3f2c;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--f-read); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1080px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.1; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: var(--violet); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; border-radius: 10px; }
+
+/* ---------- topo ---------- */
+.top { display: flex; justify-content: space-between; align-items: center; padding-block: 20px; gap: 16px; }
+.brand { font-family: var(--f-display); font-weight: 700; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+.brand .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--violet); display: grid; place-items: center; color: #fff; font-size: 15px; }
+.top nav { display: flex; gap: 20px; font-family: var(--f-display); font-size: 15px; }
+.top nav a { color: var(--muted); text-decoration: none; }
+.top nav a:hover { color: var(--ink); }
+
+/* ---------- abertura ---------- */
+.hero { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center; padding-block: 40px 72px; }
+.hero > * { min-width: 0; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--violet); }
+.hero h1 { font-size: clamp(40px, 6.4vw, 76px); font-weight: 800; letter-spacing: -0.03em; margin-top: 14px; }
+.hero h1 em { font-family: var(--f-read); font-style: italic; font-weight: 400; letter-spacing: -0.01em; color: var(--violet); }
+.lead { margin-top: 20px; font-size: 19px; color: var(--muted); max-width: 34em; }
+
+.downloads { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.dl {
+  display: flex; align-items: center; gap: 14px; text-decoration: none;
+  padding: 14px 20px 14px 16px; border-radius: 14px; border: 1.5px solid var(--line);
+  background: var(--sheet); color: var(--ink); min-width: 0;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.dl.primary { background: var(--violet); border-color: var(--violet); color: #fff; }
+.dl:hover { transform: translateY(-2px); border-color: var(--violet); }
+.dl svg { width: 28px; height: 28px; flex: none; }
+.dl b { display: block; font-family: var(--f-display); font-size: 17px; line-height: 1.2; }
+.dl small { display: block; font-family: var(--f-mono); font-size: 12px; opacity: .8; }
+.dl[aria-disabled="true"] { cursor: default; opacity: .75; }
+.dl[aria-disabled="true"]:hover { transform: none; }
+.soon { margin-top: 14px; font-size: 14px; color: var(--muted); }
+
+/* ---------- leitor desenhado ---------- */
+.phone {
+  justify-self: center; width: min(320px, 100%); aspect-ratio: 9 / 18.5; max-width: 100%;
+  border-radius: 38px; padding: 12px; background: #0d0b12;
+  box-shadow: 0 30px 60px -20px rgba(40, 20, 90, .35);
+}
+.screen { height: 100%; border-radius: 28px; background: var(--sepia); color: var(--sepia-ink); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+.screen .bar { display: flex; justify-content: space-between; padding: 14px 18px 0; font-family: var(--f-mono); font-size: 10px; opacity: .7; }
+.screen .page { padding: 16px 20px; font-size: 13.5px; line-height: 1.65; flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
+.screen h3 { font-family: var(--f-read); font-weight: 600; font-size: 18px; margin-bottom: 4px; }
+.screen .reading { background: var(--mark); border-radius: 6px; padding: 2px 6px; margin: 0 -6px; }
+.screen .player {
+  margin: 0 10px 10px; border-radius: 16px; background: rgba(0,0,0,.08);
+  padding: 10px 12px; display: flex; align-items: center; gap: 10px; font-family: var(--f-display); font-size: 12px;
+}
+.screen .play { width: 30px; height: 30px; border-radius: 50%; background: var(--sepia-ink); color: var(--sepia); display: grid; place-items: center; font-size: 11px; flex: none; }
+.screen .player span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.screen .rate { font-family: var(--f-mono); font-size: 11px; }
+
+/* ---------- seções ---------- */
+section { padding-block: 56px; border-top: 1px solid var(--line); }
+.sec-head { display: grid; gap: 10px; margin-bottom: 32px; max-width: 40em; }
+.sec-head h2 { font-size: clamp(28px, 3.6vw, 40px); font-weight: 700; letter-spacing: -0.02em; }
+.sec-head p { color: var(--muted); }
+
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 32px; }
+.feature { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.feature .ico { width: 40px; height: 40px; border-radius: 12px; background: var(--violet-soft); color: var(--violet); display: grid; place-items: center; }
+.feature .ico svg { width: 22px; height: 22px; }
+.feature h3 { font-size: 20px; font-weight: 700; margin-top: 6px; }
+.feature p { color: var(--muted); font-size: 16px; }
+
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; counter-reset: s; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: s; display: grid; gap: 8px; align-content: start; padding-top: 16px; border-top: 2px solid var(--violet); min-width: 0; }
+.steps li::before { content: "Passo " counter(s); font-family: var(--f-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--violet); }
+.steps h3 { font-size: 19px; font-weight: 700; }
+.steps p { color: var(--muted); font-size: 15.5px; }
+.steps code, .install code { font-family: var(--f-mono); font-size: .85em; background: var(--violet-soft); padding: 1px 6px; border-radius: 5px; }
+
+.install { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.card { background: var(--sheet); border: 1px solid var(--line); border-radius: 18px; padding: 24px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+.card h3 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.card h3 svg { width: 24px; height: 24px; color: var(--violet); }
+.card ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.card .req { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 12px; }
+
+footer { border-top: 1px solid var(--line); padding-block: 32px 48px; color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+footer .mono { font-family: var(--f-mono); font-size: 12px; }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; gap: 40px; padding-block: 24px 56px; }
+  .features { grid-template-columns: 1fr 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .install { grid-template-columns: 1fr; }
+  .top nav { display: none; }
+}
+@media (max-width: 520px) {
+  .features, .steps { grid-template-columns: 1fr; }
+  .dl { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .dl { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="logo" aria-hidden="true">U</span>Ultimate Novel Reader</div>
+    <nav aria-label="Seções">
+      <a href="#recursos">Recursos</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#instalar">Instalar</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Celular Android · PC Windows · grátis</div>
+        <h1>Web novels em português, <em>do seu jeito.</em></h1>
+        <p class="lead">Baixe capítulos dos sites que você já lê, traduza do inglês para o português e leia ou ouça no celular, até offline e com a tela desligada.</p>
+
+        <div class="downloads">
+          <a class="dl primary" id="dl-celular" href="#instalar">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 9.2 19.3 6a.4.4 0 0 0-.7-.4l-1.8 3.2a11 11 0 0 0-9.6 0L5.4 5.6a.4.4 0 1 0-.7.4l1.8 3.2A9.6 9.6 0 0 0 2 16.5h20a9.6 9.6 0 0 0-4.5-7.3ZM7.5 13.6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm9 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>
+            <span><b>Baixar para Android</b><small id="v-celular">arquivo .apk</small></span>
+          </a>
+          <a class="dl" id="dl-pc" href="#instalar">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10 4.5v7H3v-6Zm0 13 7 1v-7H3v6Zm8 1.1L21 21v-8.5H11v7.1Zm0-15.2v7.1h10V3L11 4.4Z"/></svg>
+            <span><b>Baixar para Windows</b><small id="v-pc">arquivo .zip</small></span>
+          </a>
+        </div>
+        <p class="soon" id="soon">Buscando a versão mais nova… Se os botões não ligarem, recarregue a página.</p>
+      </div>
+
+      <div class="phone" aria-label="Exemplo da tela de leitura com o audiobook tocando">
+        <div class="screen">
+          <div class="bar"><span>Capítulo 12 de 480</span><span>Sépia · 19</span></div>
+          <div class="page">
+            <h3>Capítulo 12: A Torre de Gelo</h3>
+            <p>O vento cortava as pedras da muralha quando Lin chegou ao último degrau. Lá embaixo, a cidade parecia pequena demais para guardar tantos segredos.</p>
+            <p class="reading">Ele respirou fundo e empurrou a porta. Do outro lado, uma sala vazia e uma única vela acesa esperavam por ele.</p>
+            <p>— Você demorou — disse uma voz atrás da chama.</p>
+            <p>Lin não respondeu. Já tinha ouvido aquela voz antes, muitos anos atrás, numa noite de neve.</p>
+          </div>
+          <div class="player" aria-hidden="true">
+            <span class="play">❚❚</span>
+            <span>Ouvindo · Capítulo 12</span>
+            <span class="rate">1.25x</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section id="recursos">
+      <div class="sec-head">
+        <h2>Tudo o que uma maratona de capítulos pede</h2>
+        <p>Feito para quem lê novels longas, com milhares de capítulos, e quer ler em português sem ficar pulando de site em site.</p>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h7M7.5 3v2M5.5 5c0 4 3 7 6 8M10 5c-.5 3-3 6-6 7"/><path d="m13 21 4-10 4 10M14.5 17.5h5"/></svg></div>
+          <h3>Tradução automática</h3>
+          <p>Do inglês para o português, capítulo por capítulo. Funciona até sem internet no celular. O nome da obra fica no original.</p>
+        </div>
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="3" y="14" width="4" height="7" rx="1.5"/><rect x="17" y="14" width="4" height="7" rx="1.5"/></svg></div>
+          <h3>Audiobook</h3>
+          <p>A voz lê a novel em voz alta e passa de capítulo sozinha. Escolha a voz, a velocidade e um timer para dormir.</p>
+        </div>
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/><path d="m17 16 4 4M21 16l-4 4"/></svg></div>
+          <h3>Só o texto da história</h3>
+          <p>Propaganda, avisos de site, notas do tradutor e botões de navegação saem do capítulo. Sobra só a novel.</p>
+        </div>
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4V3Z"/></svg></div>
+          <h3>Leitura contínua</h3>
+          <p>Os capítulos vêm emendados um embaixo do outro. É só rolar, sem tocar em "próximo". Tema claro, sépia, escuro ou preto.</p>
+        </div>
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="13" height="10" rx="1.5"/><path d="M6 18h5"/><rect x="17" y="8" width="5" height="12" rx="1.2"/></svg></div>
+          <h3>Do PC para o celular</h3>
+          <p>O PC baixa e traduz obras inteiras de madrugada e gera um arquivo <code>.unr</code>. Abra no celular e está tudo lá, com capa.</p>
+        </div>
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+          <h3>Aba privada</h3>
+          <p>Guarde obras numa aba separada, aberta só com senha ou digital. Elas nem aparecem nas notificações.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="como-funciona">
+      <div class="sec-head">
+        <h2>Como funciona</h2>
+        <p>O jeito mais rápido é deixar o PC fazer o trabalho pesado e ler no celular.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>Cole o link</h3><p>No programa do PC, cole o link da página da novel ou só o nome dela para buscar.</p></li>
+        <li><h3>Baixe e traduza</h3><p>Ele lê a lista de capítulos, baixa um por um e traduz. Dá para deixar uma fila rodando à noite.</p></li>
+        <li><h3>Mande para o celular</h3><p>Gere o arquivo <code>.unr</code> e mande pelo WhatsApp, Drive ou cabo USB.</p></li>
+        <li><h3>Leia ou ouça</h3><p>Abra o arquivo no app do celular. Ele continua de onde você parou, com ou sem internet.</p></li>
+      </ol>
+    </section>
+
+    <section id="instalar">
+      <div class="sec-head">
+        <h2>Instalar</h2>
+        <p>Os dois são grátis e não pedem cadastro.</p>
+      </div>
+      <div class="install">
+        <div class="card">
+          <h3><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 9.2 19.3 6a.4.4 0 0 0-.7-.4l-1.8 3.2a11 11 0 0 0-9.6 0L5.4 5.6a.4.4 0 1 0-.7.4l1.8 3.2A9.6 9.6 0 0 0 2 16.5h20a9.6 9.6 0 0 0-4.5-7.3ZM7.5 13.6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm9 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>Celular Android</h3>
+          <ol>
+            <li>Toque em <b>Baixar para Android</b> e abra o arquivo <code>.apk</code>.</li>
+            <li>Se o celular pedir, permita <b>instalar apps desta fonte</b>. O app não está na Play Store, por isso o aviso.</li>
+            <li>Toque em <b>Instalar</b>. Daí em diante o próprio app avisa quando sai versão nova e atualiza num toque, sem perder nada.</li>
+          </ol>
+          <p class="req">Android 7 ou mais novo · cerca de 70 MB</p>
+        </div>
+        <div class="card">
+          <h3><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10 4.5v7H3v-6Zm0 13 7 1v-7H3v6Zm8 1.1L21 21v-8.5H11v7.1Zm0-15.2v7.1h10V3L11 4.4Z"/></svg>PC Windows</h3>
+          <ol>
+            <li>Clique em <b>Baixar para Windows</b> e, com o botão direito no <code>.zip</code>, escolha <b>Extrair tudo</b>.</li>
+            <li>Abra a pasta e dê dois cliques em <code>UltimateNovelReader.exe</code>. Não precisa instalar.</li>
+            <li>Se o Windows mostrar "O Windows protegeu o computador", clique em <b>Mais informações</b> e depois em <b>Executar assim mesmo</b>. As próximas versões o programa baixa e instala sozinho.</li>
+          </ol>
+          <p class="req">Windows 10 ou 11 · Chrome ou Edge instalado · cerca de 160 MB</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Ultimate Novel Reader · feito no Brasil</span>
+    <span class="mono" id="versoes">Versões mais novas: em breve</span>
+  </footer>
+</div>
+
+<script>
+// Busca as versões mais novas no repositório público de downloads e liga os botões.
+// Se não der (sem internet, sem versões ainda), os botões levam para "Instalar".
+const RELEASES = "https://api.github.com/repos/andrehuebes09-spec/ultimate-novel-reader/releases?per_page=30";
+const ALVOS = {
+  celular: { prefixo: "celular-v1.", ext: ".apk", tipo: "arquivo .apk" },
+  pc:      { prefixo: "pc-v",        ext: ".zip", tipo: "arquivo .zip" },
+};
+
+function maisNova(releases, alvo) {
+  let melhor = null;
+  for (const r of releases) {
+    if (r.draft || r.prerelease || !r.tag_name.startsWith(alvo.prefixo)) continue;
+    const n = parseInt(r.tag_name.slice(alvo.prefixo.length), 10);
+    const arq = (r.assets || []).find(a => a.name.toLowerCase().endsWith(alvo.ext));
+    if (!arq || isNaN(n) || (melhor && n <= melhor.n)) continue;
+    melhor = { n, versao: "v" + r.tag_name.split("-v")[1], url: arq.browser_download_url, mb: Math.round(arq.size / 1048576) };
+  }
+  return melhor;
+}
+
+fetch(RELEASES)
+  .then(r => r.ok ? r.json() : [])
+  .then(releases => {
+    const achadas = {};
+    for (const [qual, alvo] of Object.entries(ALVOS)) {
+      const v = maisNova(releases, alvo);
+      if (!v) continue;
+      achadas[qual] = v;
+      const a = document.getElementById("dl-" + qual);
+      a.href = v.url;
+      a.removeAttribute("target");
+      document.getElementById("v-" + qual).textContent = alvo.tipo + " · " + v.versao + (v.mb ? " · " + v.mb + " MB" : "");
+    }
+    if (achadas.celular || achadas.pc) {
+      document.getElementById("soon").hidden = true;
+      document.getElementById("versoes").textContent = "Versões mais novas: " +
+        [achadas.celular && "celular " + achadas.celular.versao, achadas.pc && "PC " + achadas.pc.versao].filter(Boolean).join(" · ");
+    }
+  })
+  .catch(() => {});
+</script>
+</body>
+</html>
